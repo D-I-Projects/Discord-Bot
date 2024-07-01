@@ -125,7 +125,7 @@ class Client(commands.Bot):
         if channel:
             await channel.send(f'**Welcome**, {member.mention}, to **D&I Projects**!')
 
-TOKEN = "No"
+TOKEN = "TOKEN"
 
 client = Client()
 
@@ -142,8 +142,6 @@ async def help_command(interaction: discord.Interaction, types_help: str):
         help_link = "https://github.com/D-I-Projects/Discord-Bot/wiki"
     elif types_help == "Destor":
         help_link = "https://github.com/D-I-Projects/Destor/wiki"
-    elif types_help == "PC Info":
-        help_link = "https://github.com/wfxey/PC-Info/wiki"
     elif types_help == "DiscordBotCreator":
         help_link = "https://github.com/D-I-Projects/DiscordBotCreator/wiki"
     else:
@@ -153,7 +151,7 @@ async def help_command(interaction: discord.Interaction, types_help: str):
 
 @help_command.autocomplete('types_help')
 async def type_help_autocomplete(interaction: discord.Interaction, current: str) -> list:
-    types_help = ['D&I Bot', 'Destor', 'DiscordBotCreator', 'PC Info']
+    types_help = ['D&I Bot', 'Destor', 'DiscordBotCreator']
     return [
         app_commands.Choice(name=help_type, value=help_type)
         for help_type in types_help if current.lower() in help_type.lower()
@@ -178,7 +176,6 @@ async def release_command(interaction: discord.Interaction, types_release: str):
     repo_map = {
         "D&I Center": "D-I-Projects/D-I-Bot",
         "Destor": "D-I-Projects/Destor",
-        "PC Info": "wfxey/PC-Info",
         "DiscordBotCreator": "D-I-Projects/DiscordBotCreator",
         "Keylogger": "wfxey/Keylogger"
     }
@@ -191,7 +188,7 @@ async def release_command(interaction: discord.Interaction, types_release: str):
     else:
         await interaction.response.send_message(f'Read our documentation about **{types_release}** at **Unknown**!')
 
-@app_commands.command(name="send_message_as_user", description="Sendet eine Nachricht im Namen eines anderen Benutzers.")
+@app_commands.command(name="send_message", description="Sendet eine Nachricht im Namen eines anderen Benutzers.")
 async def send_message_as_user(interaction: discord.Interaction, member: discord.Member, message: str):
     user_id = interaction.user.id
     if not is_admin(user_id):
@@ -219,7 +216,7 @@ def is_admin(user_id):
 
 @release_command.autocomplete('types_release')
 async def type_release_autocomplete(interaction: discord.Interaction, current: str) -> list:
-    types_release = ['D&I Center', 'Destor', 'DiscordBotCreator', 'PC Info', 'Keylogger']
+    types_release = ['D&I Center', 'Destor', 'DiscordBotCreator', 'Keylogger']
     return [
         app_commands.Choice(name=release_type, value=release_type)
         for release_type in types_release if current.lower() in release_type.lower()
