@@ -125,7 +125,7 @@ class Client(commands.Bot):
         if channel:
             await channel.send(f'**Welcome**, {member.mention}, to **D&I Projects**!')
 
-TOKEN = "TOKEN"
+TOKEN = ""
 
 client = Client()
 
@@ -187,6 +187,10 @@ async def release_command(interaction: discord.Interaction, types_release: str):
         await interaction.response.send_message(f'The newest version of **{types_release}** is **{tag_name}**. Read more at **{release_link}**!')
     else:
         await interaction.response.send_message(f'Read our documentation about **{types_release}** at **Unknown**!')
+
+@app_commands.command(name="website-status", description="Send a link for our Project status website")
+async def website_status_command(interaction: discord.Interaction):
+    await interaction.response.send_message("**Our Projects status Website is** : https://d-i-projects.github.io/website/")
 
 @app_commands.command(name="send_message", description="Sendet eine Nachricht im Namen eines anderen Benutzers.")
 async def send_message_as_user(interaction: discord.Interaction, member: discord.Member, message: str):
@@ -625,6 +629,7 @@ client.tree.add_command(pypi_command)
 client.tree.add_command(gui_challenge)
 client.tree.add_command(announce)
 client.tree.add_command(send_message_as_user)
+client.tree.add_command(website_status_command)
 
 start_tray_icon()
 
