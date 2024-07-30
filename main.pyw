@@ -83,7 +83,7 @@ timezone_mapping = {
     "Cairo": "Africa/Cairo",
     "Stockholm": "Europe/Stockholm",
     "Madrid": "Europe/Madrid",
-}   #AI generated
+}   #AI generated I aint writing this much cities and stuff wtf
 
 start_time = datetime.datetime.now()
 
