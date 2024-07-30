@@ -1,14 +1,11 @@
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord import Intents, Status, Activity, ActivityType, app_commands
-from PIL import ImageDraw, Image
-import threading
 import os
 import requests
 import datetime
 import pytz
 import uuid
-import sys
 
 STATUS_CHANNEL_ID = 1263951082187526225
 
