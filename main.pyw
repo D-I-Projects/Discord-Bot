@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands, tasks
 from discord import Intents, Status, Activity, ActivityType, app_commands
-import pystray
 from PIL import ImageDraw, Image
 import threading
 import os
@@ -9,10 +8,7 @@ import requests
 import datetime
 import pytz
 import uuid
-import random
 import sys
-import asyncio
-import aiohttp
 
 STATUS_CHANNEL_ID = 1263951082187526225
 
@@ -21,24 +17,6 @@ TOKEN = ""
 intents = discord.Intents.default()
 intents.message_content = True
 intents.bans = True
-
-def load_image(size=(500, 500)):
-    image = Image.new('RGB', size, (255, 255, 255))
-    
-    dc = ImageDraw.Draw(image)
-    
-    dc.rectangle((0, 0, size[0], size[1]), fill=(54, 57, 63))
-    
-    inner_size = (int(size[0] * 0.8), int(size[1] * 0.8))
-    inner_pos = ((size[0] - inner_size[0]) // 2, (size[1] - inner_size[1]) // 2)
-    dc.rectangle((inner_pos[0], inner_pos[1], inner_pos[0] + inner_size[0], inner_pos[1] + inner_size[1]), fill=(255, 255, 255))
-    
-    dc.line([(inner_pos[0] + inner_size[0] * 0.2, inner_pos[1]), (inner_pos[0] + inner_size[0], inner_pos[1] + inner_size[1] * 0.4)], fill=(255, 255, 255), width=6)
-    dc.line([(inner_pos[0] + inner_size[0] * 0.2, inner_pos[1] + inner_size[1]), (inner_pos[0] + inner_size[0], inner_pos[1] + inner_size[1] * 0.6)], fill=(255, 255, 255), width=6)
-    dc.line([(inner_pos[0], inner_pos[1] + inner_size[1] * 0.5), (inner_pos[0] + inner_size[0] * 0.2, inner_pos[1] + inner_size[1] * 0.5)], fill=(255, 255, 255), width=6)
-    dc.line([(inner_pos[0] + inner_size[0] * 0.8, inner_pos[1] + inner_size[1] * 0.5), (inner_pos[0] + inner_size[0], inner_pos[1] + inner_size[1] * 0.5)], fill=(255, 255, 255), width=6)
-    
-    return image
 
 def is_admin(user_id):
     admin_file = os.path.join(os.path.dirname(__file__), "admin.txt")
@@ -51,24 +29,6 @@ def is_admin(user_id):
     with open(admin_file, "r") as file:
         admin_ids = [int(line.strip()) for line in file.readlines()]
     return user_id in admin_ids
-
-def create_tray_icon():
-    icon = pystray.Icon("test_icon")
-    icon.icon = load_image()
-    icon.title = "D&I Bot"
-
-    exit_action = pystray.MenuItem("Exit", exit_application)
-    icon.menu = pystray.Menu(exit_action)
-
-    icon.run()
-
-def start_tray_icon():
-    tray_thread = threading.Thread(target=create_tray_icon, daemon=True)
-    tray_thread.start()
-
-def exit_application(icon):
-    icon.stop()
-    sys.exit(0)
         
 timezone_mapping = {
     "New York": "America/New_York",
@@ -341,7 +301,5 @@ client.tree.add_command(github_repo_info)
 client.tree.add_command(pypi_command)
 client.tree.add_command(announce)
 client.tree.add_command(website_command)
-
-start_tray_icon()
 
 client.run(TOKEN)
