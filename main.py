@@ -1,11 +1,13 @@
 import discord
 from discord.ext import commands
 from discord import Intents, Status, Activity, ActivityType, app_commands
+from discord.ui import Modal, TextInput, View, Button
 import os
 import requests
 import datetime
 import pytz
 import uuid
+from datetime import date
 
 STATUS_CHANNEL_ID = 1263951082187526225
 
@@ -52,7 +54,7 @@ timezone_mapping = {
     "Cairo": "Africa/Cairo",
     "Stockholm": "Europe/Stockholm",
     "Madrid": "Europe/Madrid",
-}   #AI generated
+}  # AI generated
 
 start_time = datetime.datetime.now()
 
@@ -80,6 +82,79 @@ class Client(commands.Bot):
 
 
 client = Client()
+
+class FeedbackModal(Modal):
+    def __init__(self):
+        super().__init__(title="Feedback")
+        
+        self.add_item(TextInput(label="Rate our Bot", placeholder="Rate your experience from 1-10"))
+        self.add_item(TextInput(label="Why?", placeholder="Why did you give this rating?", style=discord.TextStyle.short))
+        self.add_item(TextInput(label="Feature Request", placeholder="What features would you like to see?", style=discord.TextStyle.paragraph))
+
+    async def on_submit(self, interaction: discord.Interaction):
+        rating = self.children[0].value
+        reason = self.children[1].value
+        feature_request = self.children[2].value
+
+        feedback_directory = "feedback"
+        
+        if not os.path.exists(feedback_directory):
+            os.makedirs(feedback_directory)
+
+        files = os.listdir(feedback_directory)
+        numbers = []
+
+        for file in files:
+            if file.endswith(".txt"):
+                filename_without_extension = os.path.splitext(file)[0]
+                if filename_without_extension.isdigit():
+                    numbers.append(int(filename_without_extension))
+
+        try:
+            if not numbers:
+                feedback_number = 0
+            else:
+                feedback_number = max(numbers) + 1
+        except ValueError:
+            feedback_number = 0
+
+        file_path = os.path.join(feedback_directory, f'{feedback_number}.txt')
+        
+        response_message = (
+            '# Feedback\n\n'
+            f'Given rating: {rating}.\n'
+            f'Reason: {reason}\n'
+            f'Feature request: {feature_request}\n\n'
+            f'Feedback **#{feedback_number}** has been submitted.'
+        )
+        
+        today_date = date.today().isoformat()
+        user_id = interaction.user.id
+        
+        text_message = (
+            '# Feedback\n\n'
+            f'Submitted by USER-ID : {user_id}\n'
+            f'Submitted at: {today_date}\n'
+            f'Given rating: {rating}.\n'
+            f'Reason: {reason}\n'
+            f'Feature request: {feature_request}\n\n'
+            f'Feedback Number: **#{feedback_number}**.\n'
+            f'Status: None.'
+        )
+        
+        try:
+            with open(file_path, "w") as file:
+                file.write(text_message)
+        except IOError as e:
+            await interaction.response.send_message(f"An error occurred while saving feedback: {e}", ephemeral=True)
+            return
+        
+        await interaction.response.send_message(response_message, ephemeral=True)
+
+@app_commands.command(name='feedback', description="Give feedback for our Bot.")
+async def feedback(interaction: discord.Interaction):
+    modal = FeedbackModal()
+    await interaction.response.send_modal(modal)
 
 def get_latest_release(repo_url):
     response = requests.get(f'https://api.github.com/repos/{repo_url}/releases/latest')
@@ -298,5 +373,6 @@ client.tree.add_command(github_repo_info)
 client.tree.add_command(pypi_command)
 client.tree.add_command(announce)
 client.tree.add_command(website_command)
+client.tree.add_command(feedback)
 
 client.run(TOKEN)
