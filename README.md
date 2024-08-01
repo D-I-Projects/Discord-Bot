@@ -26,3 +26,6 @@ Reason: {reason}\
 Feature request: {feature_request}
 Feedback Number: **#{feedback_number}**
 ```
+
+DO NOT SUBMIT ANY SENSITIVE DATA!
+We are not responsible for any sensibel Data you have submitted!
