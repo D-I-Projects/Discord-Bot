@@ -15,6 +15,14 @@
 ## Textfile function
 All text files you save are not private, we will even check them for people that are bypassing rules. So you can use the function but do NOT share any sensible data!
 
+Commands : 
+```
+/getfile file_id:{file_id}
+/savefile file_name:{file_name} content:{content}
+/deletefile file_id:{file_id}
+```
+
+
 ## Feedback function
 When you submit a Feedback form we receive following data : 
 
