@@ -24,6 +24,13 @@ Commands :
 
 
 ## Feedback function
+Used to give feedback to our Bot or our Programs.
+
+Coammands:
+```
+/feedback
+```
+
 When you submit a Feedback form we receive following data : 
 
 ```
@@ -36,4 +43,5 @@ Feedback Number: **#{feedback_number}**
 ```
 
 DO NOT SUBMIT ANY SENSITIVE DATA!
+
 We are not responsible for any sensibel Data you have submitted!
