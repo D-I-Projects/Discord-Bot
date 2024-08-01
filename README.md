@@ -11,3 +11,18 @@
 </div>
 
 # Data Collection and Privacy
+
+## Textfile function
+All text files you save are not private, we will even check them for people that are bypassing rules. So you can use the function but do NOT share any sensible data!
+
+## Feedback function
+When you submit a Feedback form we receive following data : 
+
+```
+Submitted by USER-ID : {user_id}
+Submitted at: {today_date}
+Given rating: {rating}
+Reason: {reason}\
+Feature request: {feature_request}
+Feedback Number: **#{feedback_number}**
+```
