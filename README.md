@@ -14,6 +14,8 @@ WIKI IS OUTDATED
 
 # Data Collection and Privacy
 
+Here is all data we collect, for sure not automatically. But manually, thats basically the data you give us when you use the following listed commands.
+
 ## Textfile function
 All text files you save are not private, we will even check them for people that are bypassing rules. So you can use the function but do NOT share any sensible data!
 
