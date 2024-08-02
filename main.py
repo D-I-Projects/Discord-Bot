@@ -87,14 +87,16 @@ class FeedbackModal(Modal):
     def __init__(self):
         super().__init__(title="Feedback")
         
-        self.add_item(TextInput(label="Rate our Bot", placeholder="Rate your experience from 1-10"))
+        self.add_item(TextInput(label="Program", style=discord.TextStyle.short))
+        self.add_item(TextInput(label="Rate your chosen Program", placeholder="Rate your experience from 1-10"))
         self.add_item(TextInput(label="Why?", placeholder="Why did you give this rating?", style=discord.TextStyle.short))
         self.add_item(TextInput(label="Feature Request", placeholder="What features would you like to see?", style=discord.TextStyle.paragraph))
 
     async def on_submit(self, interaction: discord.Interaction):
-        rating = self.children[0].value
-        reason = self.children[1].value
-        feature_request = self.children[2].value
+        program = self.children[0].value
+        rating = self.children[1].value
+        reason = self.children[2].value
+        feature_request = self.children[3].value
 
         feedback_directory = "feedback"
         
@@ -122,6 +124,7 @@ class FeedbackModal(Modal):
         
         response_message = (
             '# Feedback\n\n'
+            f'Program : {program}'
             f'Given rating: {rating}.\n'
             f'Reason: {reason}\n'
             f'Feature request: {feature_request}\n\n'
@@ -133,6 +136,7 @@ class FeedbackModal(Modal):
         
         text_message = (
             '# Feedback\n\n'
+            f'Program : {program}'
             f'Submitted by USER-ID : {user_id}\n'
             f'Submitted at: {today_date}\n'
             f'Given rating: {rating}.\n'
