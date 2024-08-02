@@ -10,6 +10,8 @@ WIKI IS OUTDATED
 
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/rfrMnA4XCc)
 
+</div>
+
 # Data Collection and Privacy
 
 ## Textfile function
@@ -46,5 +48,3 @@ Feedback Number: **#{feedback_number}**
 DO NOT SUBMIT ANY SENSITIVE DATA!
 
 We are not responsible for any sensibel Data you have submitted!
-
-</div>
