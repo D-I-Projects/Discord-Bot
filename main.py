@@ -44,7 +44,7 @@ timezone_mapping = {
     "Chicago": "America/Chicago",
     "Toronto": "America/Toronto",
     "Mexico City": "America/Mexico_City",
-    "SÃ£o Paulo": "America/Sao_Paulo",
+    "Säo Paulo": "America/Sao_Paulo",
     "Moscow": "Europe/Moscow",
     "Dubai": "Asia/Dubai",
     "Hong Kong": "Asia/Hong_Kong",
