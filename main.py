@@ -9,8 +9,6 @@ import pytz
 import uuid
 from datetime import date
 
-STATUS_CHANNEL_ID = 1263951082187526225
-
 TOKEN = ""
 
 intents = discord.Intents.default()
@@ -44,7 +42,7 @@ timezone_mapping = {
     "Chicago": "America/Chicago",
     "Toronto": "America/Toronto",
     "Mexico City": "America/Mexico_City",
-    "Säo Paulo": "America/Sao_Paulo",
+    "São Paulo": "America/Sao_Paulo",
     "Moscow": "Europe/Moscow",
     "Dubai": "Asia/Dubai",
     "Hong Kong": "Asia/Hong_Kong",
@@ -79,6 +77,12 @@ class Client(commands.Bot):
         )
         
         await self.change_presence(status=Status.online, activity=activity)
+        
+    async def on_member_join(self, member):
+        channel_id = 1230939254205448242
+        channel = self.get_channel(channel_id)
+        if channel:
+            await channel.send(f'**Welcome**, {member.mention}, to **D&I Projects**!')
 
 
 client = Client()
@@ -124,7 +128,7 @@ class FeedbackModal(Modal):
         
         response_message = (
             '# Feedback\n\n'
-            f'Program : {program}.\n'
+            f'Program : {program}'
             f'Given rating: {rating}.\n'
             f'Reason: {reason}\n'
             f'Feature request: {feature_request}\n\n'
@@ -136,7 +140,7 @@ class FeedbackModal(Modal):
         
         text_message = (
             '# Feedback\n\n'
-            f'Program : {program}.\n'
+            f'Program : {program}'
             f'Submitted by USER-ID : {user_id}\n'
             f'Submitted at: {today_date}\n'
             f'Given rating: {rating}.\n'
@@ -305,7 +309,7 @@ async def delete_file_command(interaction: discord.Interaction, file_id: str):
     else:
         await interaction.response.send_message(f"No file found with ID **{file_id}**.")
 
-@app_commands.command(name="announce", description="Sendet eine AnkÃ¼ndigung an einen bestimmten Kanal.")
+@app_commands.command(name="announce", description="Sendet eine Ankündigung an einen bestimmten Kanal.")
 async def announce(interaction: discord.Interaction, message: str):
     user_id = interaction.user.id
     if not is_admin(user_id):
