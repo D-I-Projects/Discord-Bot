@@ -70,10 +70,11 @@ class Client(commands.Bot):
         synced = await self.tree.sync()
         print("Slash CMDs Synced " + str(len(synced)) + " Commands")
         
-        activity = Activity(
-            type=ActivityType.playing,
-            name='Destor',
+        activity = discord.Activity(
+            type=discord.ActivityType.watching,
+            name='D&I Projects',
             application_id=1245459087584661513,
+            start=datetime.datetime.now()
         )
         
         await self.change_presence(status=Status.online, activity=activity)
