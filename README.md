@@ -10,5 +10,5 @@
 
 </div>
 
-# Privacy Police
+# Privacy Policy
 
