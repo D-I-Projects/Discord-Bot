@@ -11,4 +11,4 @@
 </div>
 
 # Privacy Policy
-
+https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md
