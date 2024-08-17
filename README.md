@@ -10,6 +10,9 @@
 
 </div>
 
+# User Install
+**https://discord.com/oauth2/authorize?client_id=1233747927000678420**
+
 # Privacy Policy
 **https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md**
 
