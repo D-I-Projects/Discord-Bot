@@ -10,41 +10,5 @@
 
 </div>
 
-# Data Collection and Privacy
+# Privacy Police
 
-Here is all data we collect, for sure not automatically. But manually, thats basically the data you give us when you use the following listed commands.
-
-## Textfile function
-All text files you save are not private, we will even check them for people that are bypassing rules. So you can use the function but do NOT share any sensible data!
-
-Commands : 
-```
-/getfile file_id:{file_id}
-/savefile file_name:{file_name} content:{content}
-/deletefile file_id:{file_id}
-```
-
-
-## Feedback function
-Used to give feedback to our Bot or our Programs.
-
-Coammands:
-```
-/feedback
-```
-
-When you submit a Feedback form we receive following data : 
-
-```
-Program : {program}
-Submitted by USER-ID : {user_id}
-Submitted at: {today_date}
-Given rating: {rating}
-Reason: {reason}\
-Feature request: {feature_request}
-Feedback Number: **#{feedback_number}**
-```
-
-DO NOT SUBMIT ANY SENSITIVE DATA!
-
-We are not responsible for any sensibel Data you have submitted!
