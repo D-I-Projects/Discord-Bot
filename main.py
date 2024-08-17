@@ -128,7 +128,7 @@ class FeedbackModal(Modal):
         
         response_message = (
             '# Feedback\n\n'
-            f'Program : {program}'
+            f'Program : {program}.\n'
             f'Given rating: {rating}.\n'
             f'Reason: {reason}\n'
             f'Feature request: {feature_request}\n\n'
@@ -160,6 +160,8 @@ class FeedbackModal(Modal):
         await interaction.response.send_message(response_message, ephemeral=True)
 
 @app_commands.command(name='feedback', description="Give feedback for our Bot.")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def feedback(interaction: discord.Interaction):
     modal = FeedbackModal()
     await interaction.response.send_modal(modal)
@@ -172,6 +174,8 @@ def get_latest_release(repo_url):
     return "Unknown", None
 
 @app_commands.command(name="help", description="A command that helps you!")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def help_command(interaction: discord.Interaction, types_help: str):
     if types_help == "D&I Bot":
         help_link = "https://d-i-projects.github.io/project/discord-bot/"
@@ -195,20 +199,28 @@ async def type_help_autocomplete(interaction: discord.Interaction, current: str)
     ]
 
 @app_commands.command(name="ping", description="Show you the current Ping of the Bot!")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message(f"**Pong! {round(client.latency * 1000)}ms**")
     
 @app_commands.command(name="privacy", description="Information about the privacy of text files.")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def privacy(interaction: discord.Interaction):
     await interaction.response.send_message(
         "All text files you save are not private. We will even check them to ensure no one is bypassing rules. You can use the function, but do NOT share any sensitive data!"
     )
 
 @app_commands.command(name="discord", description="Sends a valid Discord Server Link for our Server!")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def discord_command(interaction: discord.Interaction):
     await interaction.response.send_message('**Our Discord Server**: **https://discord.gg/5NDYmBVdSA**')
 
 @app_commands.command(name="release", description="Shows you the newest version of the program!")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def release_command(interaction: discord.Interaction, types_release: str):
     repo_map = {
         "D&I Bot": "D-I-Projects/Discord-Bot",
@@ -226,10 +238,6 @@ async def release_command(interaction: discord.Interaction, types_release: str):
         await interaction.response.send_message(f'The newest version of **{types_release}** is **{tag_name}**. Read more at **{release_link}**!')
     else:
         await interaction.response.send_message(f'Read our documentation about **{types_release}** at **Unknown**!')
-
-@app_commands.command(name="website", description="Sends a link Website")
-async def website_command(interaction: discord.Interaction):
-    await interaction.response.send_message("**Our Website for Documentations and more is** : https://d-i-projects.github.io/")
 
 @release_command.autocomplete('types_release')
 async def type_release_autocomplete(interaction: discord.Interaction, current: str) -> list:
@@ -273,6 +281,8 @@ async def uptime_command(interaction: discord.Interaction):
     await interaction.response.send_message(uptime_message)
 
 @app_commands.command(name="savefile", description="Saves a text file.")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def save_file_command(interaction: discord.Interaction, file_name: str, content: str):
     unique_id = str(uuid.uuid4())
     file_path = os.path.join(file_storage_dir, f"{unique_id}.txt")
@@ -282,6 +292,8 @@ async def save_file_command(interaction: discord.Interaction, file_name: str, co
     await interaction.user.send(f'File **{file_name}** saved with ID **{unique_id}**.')
 
 @app_commands.command(name="getfile", description="Retrieves a saved text file.")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def get_file_command(interaction: discord.Interaction, file_id: str):
     file_data = text_files.get(file_id, None)
     if file_data:
@@ -296,6 +308,8 @@ async def get_file_command(interaction: discord.Interaction, file_id: str):
         await interaction.response.send_message(f"No file found with ID **{file_id}**.")
         
 @app_commands.command(name="deletefile", description="Deletes a saved text file.")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def delete_file_command(interaction: discord.Interaction, file_id: str):
     file_data = text_files.get(file_id, None)
     if file_data:
@@ -380,7 +394,6 @@ client.tree.add_command(delete_file_command)
 client.tree.add_command(github_repo_info)
 client.tree.add_command(pypi_command)
 client.tree.add_command(announce)
-client.tree.add_command(website_command)
 client.tree.add_command(feedback)
 
 client.run(TOKEN)
