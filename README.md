@@ -12,3 +12,6 @@
 
 # Privacy Policy
 https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md
+
+# Terms of Service
+https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md
