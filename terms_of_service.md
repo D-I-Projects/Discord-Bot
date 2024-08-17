@@ -12,7 +12,7 @@ The D&I Bot is licensed under the [MIT License](https://opensource.org/licenses/
 - **The above copyright notice and this permission notice must be included in all copies or substantial portions of the Software.**
 - **The software is provided "as is", without warranty of any kind.**
 
-For the full text of the MIT License, please see the [LICENSE file](./LICENSE) in the project repository.
+For the full text of the MIT License, please see the [LICENSE file](./LICENSE.md) in the project repository.
 
 ## Acceptable Use
 
@@ -32,7 +32,7 @@ You agree not to:
 
 ## Data Collection and Privacy
 
-Please refer to our [Privacy Policy](#privacy-policy) for details on how we collect, use, and protect your data.
+Please refer to our [Privacy Policy](#privacy-policy.md) for details on how we collect, use, and protect your data.
 
 ## Disclaimers and Limitation of Liability
 
