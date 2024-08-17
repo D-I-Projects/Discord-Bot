@@ -47,10 +47,6 @@ We reserve the right to suspend or terminate your access to the bot at our discr
 
 We may update these Terms of Service from time to time. Any changes will be posted on this page with an updated effective date.
 
-## Governing Law
-
-These Terms of Service are governed by and construed in accordance with the laws of [Your Country/State], without regard to its conflict of laws principles.
-
 ## Contact Us
 
 If you have any questions about these Terms of Service, please contact us via our [Discord server](https://discord.gg/rfrMnA4XCc).
