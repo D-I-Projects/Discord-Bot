@@ -32,7 +32,7 @@ You agree not to:
 
 ## Data Collection and Privacy
 
-Please refer to our [Privacy Policy](#privacy-policy.md) for details on how we collect, use, and protect your data.
+Please refer to our [Privacy Policy](./privacy-policy.md) for details on how we collect, use, and protect your data.
 
 ## Disclaimers and Limitation of Liability
 
