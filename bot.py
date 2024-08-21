@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import Intents, Status, Activity, ActivityType, app_commands
-from discord.ui import Modal, TextInput, View, Button
+from discord.ui import Modal, TextInput, View, Button, Select
 import os
 import requests
 import datetime
@@ -70,21 +70,20 @@ class Client(commands.Bot):
         synced = await self.tree.sync()
         print("Slash CMDs Synced " + str(len(synced)) + " Commands")
         
-        activity = discord.Activity(
-            type=discord.ActivityType.watching,
-            name='D&I Projects',
-            application_id=1245459087584661513,
-            start=datetime.datetime.now()
-        )
-        
-        await self.change_presence(status=Status.online, activity=activity)
+    activity = discord.Activity(
+        type=discord.ActivityType.watching,
+        name='D&I Projects',
+        details='Currently working on some exciting projects!',
+        state='In the middle of a big update...',
+        start=datetime.datetime.now(),
+        large_image="icon",
+    )
         
     async def on_member_join(self, member):
         channel_id = 1230939254205448242
         channel = self.get_channel(channel_id)
         if channel:
             await channel.send(f'**Welcome**, {member.mention}, to **D&I Projects**!')
-
 
 client = Client()
 
@@ -167,86 +166,78 @@ async def feedback(interaction: discord.Interaction):
     modal = FeedbackModal()
     await interaction.response.send_modal(modal)
 
-def get_latest_release(repo_url):
-    response = requests.get(f'https://api.github.com/repos/{repo_url}/releases/latest')
-    if response.status_code == 200:
-        release_data = response.json()
-        return release_data['tag_name'], release_data['html_url']
-    return "Unknown", None
+class HelpView(View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(HelpSelect())
+
+class HelpSelect(Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="D&I Bot", description="Pick this if you need help with our Discord Bot!"),
+            discord.SelectOption(label="diec", description="Pick this if you need help with our PyPi Package *diec*!"),
+            discord.SelectOption(label="Destor", description="Pick this if you need help with our Program Destor!"),
+            discord.SelectOption(label="DiscordBotManager", description="Pick this if you need help with our Program DiscordBotManager!"),
+        ]
+        super().__init__(placeholder="Choose your software!", min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        selected_help = self.values[0]
+        if selected_help == "D&I Bot":
+            await interaction.response.send_message(f"Here you can read the Wiki of our [Discord Bot](https://github.com/D-I-Projects/Discord-Bot/wiki)!", ephemeral=True)
+        elif selected_help == "diec":
+            await interaction.response.send_message(f"Here you can read the Wiki of our PyPi Package [diec](https://github.com/D-I-Projects/diec)!", ephemeral=True)
+        elif selected_help == "Destor":
+            await interaction.response.send_message(f"Here you can read the Wiki of our Program [Destor](https://github.com/D-I-Projects/destor)!", ephemeral=True)
+        elif selected_help == "DiscordBotManager":
+            await interaction.response.send_message(f"Here you can read the Wiki of our Program [DiscordBotManager](https://github.com/D-I-Projects/diec/wiki)!", ephemeral=True)
 
 @app_commands.command(name="help", description="A command that helps you!")
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-async def help_command(interaction: discord.Interaction, types_help: str):
-    if types_help == "D&I Bot":
-        help_link = "https://d-i-projects.github.io/project/discord-bot/"
-    elif types_help == "diec":
-        help_link = "https://d-i-projects.github.io/project/diec/"
-    elif types_help == "Destor":
-        help_link = "https://d-i-projects.github.io/project/destor/"
-    elif types_help == "DiscordBotManager":
-        help_link = "https://d-i-projects.github.io/project/discordbotmanager/"
-    else:
-        help_link = "Unknown"
-    
-    await interaction.response.send_message(f'Read our documentation about **{types_help}** at **{help_link}**!')
-
-@help_command.autocomplete('types_help')
-async def type_help_autocomplete(interaction: discord.Interaction, current: str) -> list:
-    types_help = ['diec', 'D&I Bot', 'Destor', 'DiscordBotManager']
-    return [
-        app_commands.Choice(name=help_type, value=help_type)
-        for help_type in types_help if current.lower() in help_type.lower()
-    ]
+async def help_command(interaction: discord.Interaction):
+    await interaction.response.send_message(f"Select the software with that you need help with.", view=HelpView(), ephemeral=True)
 
 @app_commands.command(name="ping", description="Show you the current Ping of the Bot!")
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message(f"**Pong! {round(client.latency * 1000)}ms**")
-    
-@app_commands.command(name="privacy", description="Information about the privacy of text files.")
+    await interaction.response.send_message(f"**Pong! {round(client.latency * 1000)}ms**", ephemeral=True)
+
+class ImportantView(View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(ImportantSelect())
+
+class ImportantSelect(Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="Terms of Service", description="Sends a link to the Terms of Service Page."),
+            discord.SelectOption(label="Privacy Policy", description="Sends a link to the Privacy Policy Page."),
+            discord.SelectOption(label="GitHub", description="Sends a link to the GitHub Page of the Bot."),
+            discord.SelectOption(label="Discord", description="Sends a link to our Discord Server."),
+            discord.SelectOption(label="Version", description="Sends Info about the current version of the Bot for feedback and stuff."),
+        ]
+        super().__init__(placeholder="Choose the Information you are Interested in!", min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        selected_important = self.values[0]
+        if selected_important == "Terms of Service":
+            await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", ephemeral=True)
+        elif selected_important == "Privacy Policy":
+            await interaction.response.send_message(f"Here you can take a look at our [Privacy Policy](https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md)!", ephemeral=True)
+        elif selected_important == "GitHub":
+            await interaction.response.send_message(f"You can finde the Source Code and stuff under our [GitHub Page](https://github.com/D-I-Projects/Discord-Bot)!", ephemeral=True)
+        elif selected_important == "Discord":
+            await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", ephemeral=True)
+        elif selected_important == "Version":
+            await interaction.response.send_message(f"**Current version : [v24.8.21](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.21)**", ephemeral=True)
+
+@app_commands.command(name="important", description="Important Links for the Discord Bot.")
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-async def privacy(interaction: discord.Interaction):
-    await interaction.response.send_message(
-        "All text files you save are not private. We will even check them to ensure no one is bypassing rules. You can use the function, but do NOT share any sensitive data!"
-    )
-
-@app_commands.command(name="discord", description="Sends a valid Discord Server Link for our Server!")
-@app_commands.allowed_installs(guilds=True, users=True)
-@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-async def discord_command(interaction: discord.Interaction):
-    await interaction.response.send_message('**Our Discord Server**: **https://discord.gg/5NDYmBVdSA**')
-
-@app_commands.command(name="release", description="Shows you the newest version of the program!")
-@app_commands.allowed_installs(guilds=True, users=True)
-@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-async def release_command(interaction: discord.Interaction, types_release: str):
-    repo_map = {
-        "D&I Bot": "D-I-Projects/Discord-Bot",
-        "Destor": "D-I-Projects/Destor",
-        "DiscordBotManager": "D-I-Projects/DiscordBotManager",
-        "d-i-projects.github.io" : "D-I-Projects/d-i-projects.github.io",
-        "diec" : "D-I-Projects/diec",
-        "diec-test-gui" : "D-I-Projects/diec-test-gui",
-    }
-    
-    repo_url = repo_map.get(types_release, None)
-    
-    if repo_url:
-        tag_name, release_link = get_latest_release(repo_url)
-        await interaction.response.send_message(f'The newest version of **{types_release}** is **{tag_name}**. Read more at **{release_link}**!')
-    else:
-        await interaction.response.send_message(f'Read our documentation about **{types_release}** at **Unknown**!')
-
-@release_command.autocomplete('types_release')
-async def type_release_autocomplete(interaction: discord.Interaction, current: str) -> list:
-    types_release = ['D&I Bot', 'Destor', 'DiscordBotManager', 'd-i-projects.github.io', 'diec', 'diec-test-gui']
-    return [
-        app_commands.Choice(name=release_type, value=release_type)
-        for release_type in types_release if current.lower() in release_type.lower()
-    ]
+async def important(interaction: discord.Interaction):
+    await interaction.response.send_message("Select the Informations you need here.", view=ImportantView(), ephemeral=True)
 
 @app_commands.command(name="time", description="Shows the current time in the specified timezone.")
 async def time_command(interaction: discord.Interaction, location: str):
@@ -255,11 +246,11 @@ async def time_command(interaction: discord.Interaction, location: str):
         if timezone:
             tz = pytz.timezone(timezone)
             current_time = datetime.datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
-            await interaction.response.send_message(f"The current time in **{location}** ({timezone}) is **{current_time}**.")
+            await interaction.response.send_message(f"The current time in **{location}** ({timezone}) is **{current_time}**.", ephemeral=True)
         else:
-            await interaction.response.send_message(f"Unknown location: **{location}**. Please provide a valid city, country, or timezone.")
+            await interaction.response.send_message(f"Unknown location: **{location}**. Please provide a valid city, country, or timezone.", ephemeral=True)
     except pytz.UnknownTimeZoneError:
-        await interaction.response.send_message(f"Unknown timezone for location: **{location}**. Please provide a valid city, country, or timezone.")
+        await interaction.response.send_message(f"Unknown timezone for location: **{location}**. Please provide a valid city, country, or timezone.", ephemeral=True)
 
 @time_command.autocomplete('location')
 async def location_autocomplete(interaction: discord.Interaction, current: str) -> list:
@@ -279,7 +270,7 @@ async def uptime_command(interaction: discord.Interaction):
     minutes, seconds = divmod(remainder, 60)
 
     uptime_message = f"Uptime: {uptime_days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
-    await interaction.response.send_message(uptime_message)
+    await interaction.response.send_message(uptime_message, ephemeral=True)
 
 @app_commands.command(name="savefile", description="Saves a text file.")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -290,7 +281,7 @@ async def save_file_command(interaction: discord.Interaction, file_name: str, co
     with open(file_path, 'w') as file:
         file.write(content)
     text_files[unique_id] = {'file_name': file_name, 'file_path': file_path}
-    await interaction.user.send(f'File **{file_name}** saved with ID **{unique_id}**.')
+    await interaction.response.send_message(f"File **{file_name}** saved with ID **{unique_id}**.", ephemeral=True)
 
 @app_commands.command(name="getfile", description="Retrieves a saved text file.")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -302,11 +293,11 @@ async def get_file_command(interaction: discord.Interaction, file_id: str):
         if os.path.exists(file_path):
             with open(file_path, 'r') as file:
                 file_content = file.read()
-            await interaction.response.send_message(f"File **{file_data['file_name']}** content:\n\n{file_content}\n")
+            await interaction.response.send_message(f"File **{file_data['file_name']}** content:\n\n{file_content}\n", ephemeral=True)
         else:
-            await interaction.response.send_message(f"File **{file_data['file_name']}** is no longer available.")
+            await interaction.response.send_message(f"File **{file_data['file_name']}** is no longer available.", ephemeral=True)
     else:
-        await interaction.response.send_message(f"No file found with ID **{file_id}**.")
+        await interaction.response.send_message(f"No file found with ID **{file_id}**.", ephemeral=True)
         
 @app_commands.command(name="deletefile", description="Deletes a saved text file.")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -318,83 +309,20 @@ async def delete_file_command(interaction: discord.Interaction, file_id: str):
         if os.path.exists(file_path):
             os.remove(file_path)
             del text_files[file_id]
-            await interaction.response.send_message(f"File **{file_data['file_name']}** deleted successfully.")
+            await interaction.response.send_message(f"File **{file_data['file_name']}** deleted successfully.", ephemeral=True)
         else:
-            await interaction.response.send_message(f"File **{file_data['file_name']}** is already deleted.")
+            await interaction.response.send_message(f"File **{file_data['file_name']}** is already deleted.", ephemeral=True)
     else:
-        await interaction.response.send_message(f"No file found with ID **{file_id}**.")
-
-@app_commands.command(name="announce", description="Sendet eine Ankündigung an einen bestimmten Kanal.")
-async def announce(interaction: discord.Interaction, message: str):
-    user_id = interaction.user.id
-    if not is_admin(user_id):
-        await interaction.response.send_message("Du hast keine Berechtigung, diesen Befehl zu verwenden.", ephemeral=True)
-        return
-    
-    channel_id = 1230939345553199105
-    channel = interaction.client.get_channel(channel_id)
-    if channel:
-        await channel.send(message)
-        await interaction.response.send_message("Nachricht wurde gesendet.", ephemeral=True)
-    else:
-        await interaction.response.send_message("Kanal nicht gefunden.", ephemeral=True)
-
-@app_commands.command(name="github_repo_info", description="Retrieves information about a GitHub repository.")
-async def github_repo_info(interaction: discord.Interaction, repo_url: str):
-    try:
-        parts = repo_url.strip("/").split("/")
-        owner = parts[-2]
-        repo_name = parts[-1]
-        
-        api_url = f"https://api.github.com/repos/{owner}/{repo_name}"
-        headers = {'Accept': 'application/vnd.github.v3+json'}
-        response = requests.get(api_url, headers=headers)
-        repo_data = response.json()
-
-        if response.status_code == 200:
-            description = repo_data.get('description', 'No description available')
-            stars = repo_data.get('stargazers_count', 'Unknown')
-            forks = repo_data.get('forks_count', 'Unknown')
-            language = repo_data.get('language', 'Unknown')
-            message = (f"**Repository:** {repo_url}\n"
-                    f"**Description:** {description}\n"
-                    f"**Stars:** {stars}\n"
-                    f"**Forks:** {forks}\n"
-                    f"**Main Language:** {language}")
-        else:
-            message = f"Failed to fetch repository information. Status code: {response.status_code}"
-        
-        await interaction.response.send_message(message)
-    
-    except Exception as e:
-        await interaction.response.send_message(f"Error retrieving GitHub repository information: {str(e)}")
-        
-@app_commands.command(name="pypi", description="Fetches information about a Python package from PyPI.")
-async def pypi_command(interaction: discord.Interaction, package_name: str):
-    try:
-        response = requests.get(f"https://pypi.org/pypi/{package_name}/json")
-        if response.status_code == 200:
-            package_info = response.json()
-            latest_version = package_info["info"]["version"]
-            summary = package_info["info"]["summary"]
-            await interaction.response.send_message(f"**Package:** {package_name}\n**Latest Version:** {latest_version}\n**Summary:** {summary}")
-        else:
-            await interaction.response.send_message(f"Failed to fetch information for package '{package_name}'.")
-    except Exception as e:
-        await interaction.response.send_message(f"Error fetching package information: {str(e)}")
+        await interaction.response.send_message(f"No file found with ID **{file_id}**.", ephemeral=True)
 
 client.tree.add_command(help_command)
 client.tree.add_command(ping)
-client.tree.add_command(discord_command)
-client.tree.add_command(release_command)
+client.tree.add_command(important)
 client.tree.add_command(time_command)
 client.tree.add_command(uptime_command)
 client.tree.add_command(save_file_command)
 client.tree.add_command(get_file_command)
 client.tree.add_command(delete_file_command)
-client.tree.add_command(github_repo_info)
-client.tree.add_command(pypi_command)
-client.tree.add_command(announce)
 client.tree.add_command(feedback)
 
 client.run(TOKEN)
