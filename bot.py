@@ -217,6 +217,8 @@ class PingView(View):
         await interaction.response.edit_message(content=f"**Pong! {round(interaction.client.latency * 1000)}ms**", view=self)
 
 @app_commands.command(name="ping", description="Show you the current Ping of the Bot!")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message(f"**Pong! {round(interaction.client.latency * 1000)}ms**", ephemeral=True, view=PingView())
 
@@ -242,7 +244,7 @@ class ImportantSelect(Select):
         privacy_policy_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
         github_page_button = link_button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
         discord_join_button = link_button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
-        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-3")
+        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-4")
         if selected_important == "Terms of Service":
             await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", view=terms_of_service_button, ephemeral=True)
         elif selected_important == "Privacy Policy":
@@ -252,7 +254,7 @@ class ImportantSelect(Select):
         elif selected_important == "Discord":
             await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", view=discord_join_button, ephemeral=True)
         elif selected_important == "Version":
-            await interaction.response.send_message(f"**Current version : [v24.8.23-3](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-3)**", view=version_button ,ephemeral=True)
+            await interaction.response.send_message(f"**Current version : [v24.8.23-4](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-4)**", view=version_button ,ephemeral=True)
 
 @app_commands.command(name="important", description="Important Links for the Discord Bot.")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -281,7 +283,29 @@ async def location_autocomplete(interaction: discord.Interaction, current: str) 
         for loc in locations if current.lower() in loc.lower()
     ]
 
+class UpTimeView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        
+        check_again_button = discord.ui.Button(label="Check again", style=discord.ButtonStyle.success)
+        check_again_button.callback = self.check_again
+        self.add_item(check_again_button)
+
+    async def check_again(self, interaction: discord.Interaction):
+        current_time = datetime.datetime.now()
+        uptime_duration = current_time - start_time
+        uptime_days = uptime_duration.days
+        uptime_seconds = uptime_duration.seconds
+        hours, remainder = divmod(uptime_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        uptime_message = f"Uptime: {uptime_days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
+        
+        await interaction.response.edit_message(content=uptime_message, view=self)
+
 @app_commands.command(name="uptime", description="Shows the bot's uptime.")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def uptime_command(interaction: discord.Interaction):
     current_time = datetime.datetime.now()
     uptime_duration = current_time - start_time
@@ -291,7 +315,8 @@ async def uptime_command(interaction: discord.Interaction):
     minutes, seconds = divmod(remainder, 60)
 
     uptime_message = f"Uptime: {uptime_days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
-    await interaction.response.send_message(uptime_message, ephemeral=True)
+    await interaction.response.send_message(uptime_message, ephemeral=True, view=UpTimeView())
+
 
 @app_commands.command(name="savefile", description="Saves a text file.")
 @app_commands.allowed_installs(guilds=True, users=True)
