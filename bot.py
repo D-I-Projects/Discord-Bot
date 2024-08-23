@@ -14,7 +14,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.bans = True
 
-def button(text, link):
+def link_button(text, link):
     link_button = Button(label=text, url=link)
     view_button_link = View()
     view_button_link.add_item(link_button)
@@ -31,7 +31,7 @@ def is_admin(user_id):
     with open(admin_file, "r") as file:
         admin_ids = [int(line.strip()) for line in file.readlines()]
     return user_id in admin_ids
-        
+
 timezone_mapping = {
     "New York": "America/New_York",
     "Los Angeles": "America/Los_Angeles",
@@ -69,21 +69,19 @@ text_files = {}
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='.', intents=Intents().all())
+        self.activity = discord.Activity(
+            type=discord.ActivityType.watching,
+            name='D&I Projects',
+            details='v24.8.23-3',
+            state='Loading...',
+            start=datetime.datetime.now()
+        )
 
     async def on_ready(self):
         print("Logged in as " + self.user.name)
         synced = await self.tree.sync()
         print("Slash CMDs Synced " + str(len(synced)) + " Commands")
-        
-    activity = discord.Activity(
-        type=discord.ActivityType.watching,
-        name='D&I Projects',
-        details='Currently working on some exciting projects!',
-        state='In the middle of a big update...',
-        start=datetime.datetime.now(),
-        large_image="icon",
-    )
-        
+
     async def on_member_join(self, member):
         channel_id = 1230939254205448242
         channel = self.get_channel(channel_id)
@@ -188,10 +186,10 @@ class HelpSelect(Select):
 
     async def callback(self, interaction: discord.Interaction):
         selected_help = self.values[0]
-        di_bot_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/wiki")
-        diec_button = button(text="Show 📩", link="https://github.com/D-I-Projects/diec")
-        destor_button = button(text="Show 📩", link="https://github.com/D-I-Projects/destor")
-        discordbotmanager_button = button(text="Show 📩", link="https://github.com/D-I-Projects/DiscordBotManager/wiki")
+        di_bot_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/wiki")
+        diec_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/diec")
+        destor_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/destor")
+        discordbotmanager_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/DiscordBotManager/wiki")
         if selected_help == "D&I Bot":
             await interaction.response.send_message(f"Here you can read the Wiki of our [Discord Bot](https://github.com/D-I-Projects/Discord-Bot/wiki)!", view=di_bot_button, ephemeral=True)
         elif selected_help == "diec":
@@ -207,11 +205,20 @@ class HelpSelect(Select):
 async def help_command(interaction: discord.Interaction):
     await interaction.response.send_message(f"Select the software with that you need help with.", view=HelpView(), ephemeral=True)
 
+class PingView(View):
+    def __init__(self):
+        super().__init__()
+        
+        check_again_button = Button(label="Check again", style=discord.ButtonStyle.success)
+        check_again_button.callback = self.check_again
+        self.add_item(check_again_button)
+
+    async def check_again(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(content=f"**Pong! {round(interaction.client.latency * 1000)}ms**", view=self)
+
 @app_commands.command(name="ping", description="Show you the current Ping of the Bot!")
-@app_commands.allowed_installs(guilds=True, users=True)
-@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message(f"**Pong! {round(client.latency * 1000)}ms**", ephemeral=True)
+    await interaction.response.send_message(f"**Pong! {round(interaction.client.latency * 1000)}ms**", ephemeral=True, view=PingView())
 
 class ImportantView(View):
     def __init__(self):
@@ -231,11 +238,11 @@ class ImportantSelect(Select):
     
     async def callback(self, interaction: discord.Interaction):
         selected_important = self.values[0]
-        terms_of_service_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md")
-        privacy_policy_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
-        github_page_button = button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
-        discord_join_button = button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
-        version_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.21")
+        terms_of_service_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md")
+        privacy_policy_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
+        github_page_button = link_button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
+        discord_join_button = link_button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
+        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.21")
         if selected_important == "Terms of Service":
             await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", view=terms_of_service_button, ephemeral=True)
         elif selected_important == "Privacy Policy":
