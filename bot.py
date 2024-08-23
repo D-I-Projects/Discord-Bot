@@ -1,9 +1,8 @@
 import discord
 from discord.ext import commands
-from discord import Intents, Status, Activity, ActivityType, app_commands
+from discord import Intents, app_commands
 from discord.ui import Modal, TextInput, View, Button, Select
 import os
-import requests
 import datetime
 import pytz
 import uuid
@@ -15,6 +14,12 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.bans = True
 
+def button(text, link):
+    link_button = Button(label=text, url=link)
+    view_button_link = View()
+    view_button_link.add_item(link_button)
+    return view_button_link
+        
 def is_admin(user_id):
     admin_file = os.path.join(os.path.dirname(__file__), "admin.txt")
     if not os.path.exists(admin_file):
@@ -183,14 +188,18 @@ class HelpSelect(Select):
 
     async def callback(self, interaction: discord.Interaction):
         selected_help = self.values[0]
+        di_bot_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/wiki")
+        diec_button = button(text="Show 📩", link="https://github.com/D-I-Projects/diec")
+        destor_button = button(text="Show 📩", link="https://github.com/D-I-Projects/destor")
+        discordbotmanager_button = button(text="Show 📩", link="https://github.com/D-I-Projects/DiscordBotManager/wiki")
         if selected_help == "D&I Bot":
-            await interaction.response.send_message(f"Here you can read the Wiki of our [Discord Bot](https://github.com/D-I-Projects/Discord-Bot/wiki)!", ephemeral=True)
+            await interaction.response.send_message(f"Here you can read the Wiki of our [Discord Bot](https://github.com/D-I-Projects/Discord-Bot/wiki)!", view=di_bot_button, ephemeral=True)
         elif selected_help == "diec":
-            await interaction.response.send_message(f"Here you can read the Wiki of our PyPi Package [diec](https://github.com/D-I-Projects/diec)!", ephemeral=True)
+            await interaction.response.send_message(f"Here you can read about our PyPi Package [diec](https://github.com/D-I-Projects/diec)!",view=diec_button, ephemeral=True)
         elif selected_help == "Destor":
-            await interaction.response.send_message(f"Here you can read the Wiki of our Program [Destor](https://github.com/D-I-Projects/destor)!", ephemeral=True)
+            await interaction.response.send_message(f"Here you can read the Wiki of our Program [Destor](https://github.com/D-I-Projects/destor)!",view=destor_button, ephemeral=True)
         elif selected_help == "DiscordBotManager":
-            await interaction.response.send_message(f"Here you can read the Wiki of our Program [DiscordBotManager](https://github.com/D-I-Projects/diec/wiki)!", ephemeral=True)
+            await interaction.response.send_message(f"Here you can read the Wiki of our Program [DiscordBotManager](https://github.com/D-I-Projects/DiscordBotManager/wiki)!",view=discordbotmanager_button, ephemeral=True)
 
 @app_commands.command(name="help", description="A command that helps you!")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -219,19 +228,24 @@ class ImportantSelect(Select):
             discord.SelectOption(label="Version", description="Sends Info about the current version of the Bot for feedback and stuff."),
         ]
         super().__init__(placeholder="Choose the Information you are Interested in!", min_values=1, max_values=1, options=options)
-
+    
     async def callback(self, interaction: discord.Interaction):
         selected_important = self.values[0]
+        terms_of_service_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md")
+        privacy_policy_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
+        github_page_button = button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
+        discord_join_button = button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
+        version_button = button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.21")
         if selected_important == "Terms of Service":
-            await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", ephemeral=True)
+            await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", view=terms_of_service_button, ephemeral=True)
         elif selected_important == "Privacy Policy":
-            await interaction.response.send_message(f"Here you can take a look at our [Privacy Policy](https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md)!", ephemeral=True)
+            await interaction.response.send_message(f"Here you can take a look at our [Privacy Policy](https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md)!", view=privacy_policy_button, ephemeral=True)
         elif selected_important == "GitHub":
-            await interaction.response.send_message(f"You can finde the Source Code and stuff under our [GitHub Page](https://github.com/D-I-Projects/Discord-Bot)!", ephemeral=True)
+            await interaction.response.send_message(f"You can finde the Source Code and stuff under our [GitHub Page](https://github.com/D-I-Projects/Discord-Bot)!", view=github_page_button, ephemeral=True)
         elif selected_important == "Discord":
-            await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", ephemeral=True)
+            await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", view=discord_join_button, ephemeral=True)
         elif selected_important == "Version":
-            await interaction.response.send_message(f"**Current version : [v24.8.21](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.21)**", ephemeral=True)
+            await interaction.response.send_message(f"**Current version : [v24.8.23](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23)**", view=version_button ,ephemeral=True)
 
 @app_commands.command(name="important", description="Important Links for the Discord Bot.")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -293,7 +307,7 @@ async def get_file_command(interaction: discord.Interaction, file_id: str):
         if os.path.exists(file_path):
             with open(file_path, 'r') as file:
                 file_content = file.read()
-            await interaction.response.send_message(f"File **{file_data['file_name']}** content:\n\n{file_content}\n", ephemeral=True)
+            await interaction.response.send_message(f"File **{file_data['file_name']}** content:\n`{file_content}`\n", ephemeral=True)
         else:
             await interaction.response.send_message(f"File **{file_data['file_name']}** is no longer available.", ephemeral=True)
     else:
