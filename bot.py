@@ -6,13 +6,25 @@ import os
 import datetime
 import pytz
 import uuid
-from datetime import date
+from datetime import date, timedelta
+import diec
 
-TOKEN = ""
+TOKEN = diec.decode()
+
+MAX_REQUESTS_PER_HOUR = 100
+
+user_requests = {}
+
+text_files = {}
+
+start_time = datetime.datetime.now()
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.bans = True
+
+file_storage_dir = "saved_files"
+os.makedirs(file_storage_dir, exist_ok=True)
 
 def link_button(text, link):
     link_button = Button(label=text, url=link)
@@ -32,6 +44,25 @@ def is_admin(user_id):
         admin_ids = [int(line.strip()) for line in file.readlines()]
     return user_id in admin_ids
 
+def can_user_make_request(user_id):
+    now = datetime.datetime.now()
+    if user_id in user_requests:
+        request_info = user_requests[user_id]
+        request_count = request_info['count']
+        first_request_time = request_info['first_request_time']
+        
+        if now - first_request_time > timedelta(hours=1):
+            user_requests[user_id] = {'count': 1, 'first_request_time': now}
+            return True
+        elif request_count < MAX_REQUESTS_PER_HOUR:
+            user_requests[user_id]['count'] += 1
+            return True
+        else:
+            return False
+    else:
+        user_requests[user_id] = {'count': 1, 'first_request_time': now}
+        return True
+    
 timezone_mapping = {
     "New York": "America/New_York",
     "Los Angeles": "America/Los_Angeles",
@@ -58,13 +89,6 @@ timezone_mapping = {
     "Stockholm": "Europe/Stockholm",
     "Madrid": "Europe/Madrid",
 }  # AI generated
-
-start_time = datetime.datetime.now()
-
-file_storage_dir = "saved_files"
-os.makedirs(file_storage_dir, exist_ok=True)
-
-text_files = {}
 
 class Client(commands.Bot):
     def __init__(self):
@@ -143,7 +167,7 @@ class FeedbackModal(Modal):
         
         text_message = (
             '# Feedback\n\n'
-            f'Program : {program}'
+            f'Program : {program}\n'
             f'Submitted by USER-ID : {user_id}\n'
             f'Submitted at: {today_date}\n'
             f'Given rating: {rating}.\n'
@@ -166,6 +190,9 @@ class FeedbackModal(Modal):
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def feedback(interaction: discord.Interaction):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     modal = FeedbackModal()
     await interaction.response.send_modal(modal)
 
@@ -203,6 +230,9 @@ class HelpSelect(Select):
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def help_command(interaction: discord.Interaction):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     await interaction.response.send_message(f"Select the software with that you need help with.", view=HelpView(), ephemeral=True)
 
 class PingView(View):
@@ -220,6 +250,9 @@ class PingView(View):
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def ping(interaction: discord.Interaction):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     await interaction.response.send_message(f"**Pong! {round(interaction.client.latency * 1000)}ms**", ephemeral=True, view=PingView())
 
 class ImportantView(View):
@@ -244,7 +277,7 @@ class ImportantSelect(Select):
         privacy_policy_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
         github_page_button = link_button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
         discord_join_button = link_button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
-        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-4")
+        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-5")
         if selected_important == "Terms of Service":
             await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", view=terms_of_service_button, ephemeral=True)
         elif selected_important == "Privacy Policy":
@@ -254,16 +287,22 @@ class ImportantSelect(Select):
         elif selected_important == "Discord":
             await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", view=discord_join_button, ephemeral=True)
         elif selected_important == "Version":
-            await interaction.response.send_message(f"**Current version : [v24.8.23-4](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-4)**", view=version_button ,ephemeral=True)
+            await interaction.response.send_message(f"**Current version : [v24.8.23-5](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-5)**", view=version_button ,ephemeral=True)
 
 @app_commands.command(name="important", description="Important Links for the Discord Bot.")
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def important(interaction: discord.Interaction):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     await interaction.response.send_message("Select the Informations you need here.", view=ImportantView(), ephemeral=True)
 
 @app_commands.command(name="time", description="Shows the current time in the specified timezone.")
 async def time_command(interaction: discord.Interaction, location: str):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     try:
         timezone = timezone_mapping.get(location, None)
         if timezone:
@@ -307,6 +346,9 @@ class UpTimeView(discord.ui.View):
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def uptime_command(interaction: discord.Interaction):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     current_time = datetime.datetime.now()
     uptime_duration = current_time - start_time
     uptime_days = uptime_duration.days
@@ -322,6 +364,9 @@ async def uptime_command(interaction: discord.Interaction):
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def save_file_command(interaction: discord.Interaction, content: str):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     unique_id = str(uuid.uuid4())
     file_path = os.path.join(file_storage_dir, f"{unique_id}.txt")
     with open(file_path, 'w') as file:
@@ -333,6 +378,9 @@ async def save_file_command(interaction: discord.Interaction, content: str):
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def get_file_command(interaction: discord.Interaction, file_id: str):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     file_data = text_files.get(file_id, None)
     if file_data:
         file_path = file_data['file_path']
@@ -349,6 +397,9 @@ async def get_file_command(interaction: discord.Interaction, file_id: str):
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 async def delete_file_command(interaction: discord.Interaction, file_id: str):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
     file_data = text_files.get(file_id, None)
     if file_data:
         file_path = file_data['file_path']
