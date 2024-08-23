@@ -245,7 +245,7 @@ class ImportantSelect(Select):
         elif selected_important == "Discord":
             await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", view=discord_join_button, ephemeral=True)
         elif selected_important == "Version":
-            await interaction.response.send_message(f"**Current version : [v24.8.23](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23)**", view=version_button ,ephemeral=True)
+            await interaction.response.send_message(f"**Current version : [v24.8.23-2](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-2)**", view=version_button ,ephemeral=True)
 
 @app_commands.command(name="important", description="Important Links for the Discord Bot.")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -289,13 +289,13 @@ async def uptime_command(interaction: discord.Interaction):
 @app_commands.command(name="savefile", description="Saves a text file.")
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-async def save_file_command(interaction: discord.Interaction, file_name: str, content: str):
+async def save_file_command(interaction: discord.Interaction, content: str):
     unique_id = str(uuid.uuid4())
     file_path = os.path.join(file_storage_dir, f"{unique_id}.txt")
     with open(file_path, 'w') as file:
         file.write(content)
-    text_files[unique_id] = {'file_name': file_name, 'file_path': file_path}
-    await interaction.response.send_message(f"File **{file_name}** saved with ID **{unique_id}**.", ephemeral=True)
+    text_files[unique_id] = {'file_path': file_path}
+    await interaction.response.send_message(f"File saved with ID **{unique_id}**.", ephemeral=True)
 
 @app_commands.command(name="getfile", description="Retrieves a saved text file.")
 @app_commands.allowed_installs(guilds=True, users=True)
@@ -307,9 +307,9 @@ async def get_file_command(interaction: discord.Interaction, file_id: str):
         if os.path.exists(file_path):
             with open(file_path, 'r') as file:
                 file_content = file.read()
-            await interaction.response.send_message(f"File **{file_data['file_name']}** content:\n`{file_content}`\n", ephemeral=True)
+            await interaction.response.send_message(f"File **{file_id}** content:\n```{file_content}```\n", ephemeral=True)
         else:
-            await interaction.response.send_message(f"File **{file_data['file_name']}** is no longer available.", ephemeral=True)
+            await interaction.response.send_message(f"File **{file_id}** is no longer available.", ephemeral=True)
     else:
         await interaction.response.send_message(f"No file found with ID **{file_id}**.", ephemeral=True)
         
@@ -323,9 +323,9 @@ async def delete_file_command(interaction: discord.Interaction, file_id: str):
         if os.path.exists(file_path):
             os.remove(file_path)
             del text_files[file_id]
-            await interaction.response.send_message(f"File **{file_data['file_name']}** deleted successfully.", ephemeral=True)
+            await interaction.response.send_message(f"File **{file_id}** deleted successfully.", ephemeral=True)
         else:
-            await interaction.response.send_message(f"File **{file_data['file_name']}** is already deleted.", ephemeral=True)
+            await interaction.response.send_message(f"File **{file_id}** is already deleted.", ephemeral=True)
     else:
         await interaction.response.send_message(f"No file found with ID **{file_id}**.", ephemeral=True)
 
