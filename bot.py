@@ -96,7 +96,7 @@ class Client(commands.Bot):
         self.activity = discord.Activity(
             type=discord.ActivityType.watching,
             name='D&I Projects',
-            details='v24.8.23-3',
+            details='v24.9.4',
             state='Loading...',
             start=datetime.datetime.now()
         )
@@ -207,7 +207,8 @@ class HelpSelect(Select):
             discord.SelectOption(label="D&I Bot", description="Pick this if you need help with our Discord Bot!"),
             discord.SelectOption(label="diec", description="Pick this if you need help with our PyPi Package *diec*!"),
             discord.SelectOption(label="Destor", description="Pick this if you need help with our Program Destor!"),
-            discord.SelectOption(label="DiscordBotManager", description="Pick this if you need help with our Program DiscordBotManager!"),
+            discord.SelectOption(label="ChatBox", description="Pick this if you need help with our Program ChatBox!"),
+            discord.SelectOption(label="Minecraft Profiler", description="Pick this if you need help with our Program Minecraft Profiler!")
         ]
         super().__init__(placeholder="Choose your software!", min_values=1, max_values=1, options=options)
 
@@ -223,9 +224,11 @@ class HelpSelect(Select):
             await interaction.response.send_message(f"Here you can read about our PyPi Package [diec](https://github.com/D-I-Projects/diec)!",view=diec_button, ephemeral=True)
         elif selected_help == "Destor":
             await interaction.response.send_message(f"Here you can read the Wiki of our Program [Destor](https://github.com/D-I-Projects/destor)!",view=destor_button, ephemeral=True)
-        elif selected_help == "DiscordBotManager":
-            await interaction.response.send_message(f"Here you can read the Wiki of our Program [DiscordBotManager](https://github.com/D-I-Projects/DiscordBotManager/wiki)!",view=discordbotmanager_button, ephemeral=True)
-
+        elif selected_help == "ChatBox":
+            await interaction.response.send_message(f"Here you can read the Wiki of our Program [ChatBox](https://github.com/D-I-Projects/ChatBox/wiki)!",view=discordbotmanager_button, ephemeral=True)
+        elif selected_help == "Minecraft Profiler":
+            await interaction.response.send_message(f"Here you can read the Wiki of our Program [Minecraft Profiler](https://github.com/D-I-Projects/minecraft-profiler/wiki)!",view=discordbotmanager_button, ephemeral=True)
+            
 @app_commands.command(name="help", description="A command that helps you!")
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
@@ -277,7 +280,7 @@ class ImportantSelect(Select):
         privacy_policy_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
         github_page_button = link_button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
         discord_join_button = link_button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
-        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-5")
+        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.4")
         if selected_important == "Terms of Service":
             await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", view=terms_of_service_button, ephemeral=True)
         elif selected_important == "Privacy Policy":
@@ -287,7 +290,7 @@ class ImportantSelect(Select):
         elif selected_important == "Discord":
             await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", view=discord_join_button, ephemeral=True)
         elif selected_important == "Version":
-            await interaction.response.send_message(f"**Current version : [v24.8.23-5](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.8.23-5)**", view=version_button ,ephemeral=True)
+            await interaction.response.send_message(f"**Current version : [v24.9.4](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.4)**", view=version_button ,ephemeral=True)
 
 @app_commands.command(name="important", description="Important Links for the Discord Bot.")
 @app_commands.allowed_installs(guilds=True, users=True)
