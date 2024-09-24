@@ -6,12 +6,13 @@ import os
 import datetime
 import pytz
 import uuid
+import asyncio
 from datetime import date, timedelta
 import diec
 
 TOKEN = diec.decode()
 
-MAX_REQUESTS_PER_HOUR = 100
+MAX_REQUESTS_PER_HOUR = 60
 
 user_requests = {}
 
@@ -78,7 +79,7 @@ timezone_mapping = {
     "Chicago": "America/Chicago",
     "Toronto": "America/Toronto",
     "Mexico City": "America/Mexico_City",
-    "São Paulo": "America/Sao_Paulo",
+    "SÃ£o Paulo": "America/Sao_Paulo",
     "Moscow": "Europe/Moscow",
     "Dubai": "Asia/Dubai",
     "Hong Kong": "Asia/Hong_Kong",
@@ -88,7 +89,7 @@ timezone_mapping = {
     "Cairo": "Africa/Cairo",
     "Stockholm": "Europe/Stockholm",
     "Madrid": "Europe/Madrid",
-}  # AI generated
+}
 
 class Client(commands.Bot):
     def __init__(self):
@@ -113,6 +114,77 @@ class Client(commands.Bot):
             await channel.send(f'**Welcome**, {member.mention}, to **D&I Projects**!')
 
 client = Client()
+
+@client.tree.context_menu(name="Report")
+async def resend(interaction: discord.Interaction, message: discord.Message):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message(
+            "You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour, try to contact us.", 
+            ephemeral=True
+        )
+        return
+
+    feedback_directory = "feedback"
+
+    if not os.path.exists(feedback_directory):
+        os.makedirs(feedback_directory)
+
+    files = os.listdir(feedback_directory)
+    numbers = [int(os.path.splitext(file)[0]) for file in files if file.endswith(".txt") and os.path.splitext(file)[0].isdigit()]
+
+    feedback_number = max(numbers, default=0) + 1
+    file_path = os.path.join(feedback_directory, f'{feedback_number}.txt')
+
+    today_date = date.today().isoformat()
+    user_id = interaction.user.id
+    reported_user_id = message.author.id
+    reported_user_name = message.author.name
+    channel_name = message.channel.name
+    channel_id = message.channel.id
+    reported_message = message.content
+
+    feedback_text = (
+        '# Feedback Submission\n\n'
+        f'- **Program:** The program you provided feedback on.\n'
+        f'- **Submitted by (USER-ID):** {user_id}\n'
+        f'- **Submission Date and Time:** {today_date}\n'
+        f'- **Reported Message:** `{reported_message}`\n'
+        f'- **Author of the Reported Message (USER-ID):** {reported_user_id}\n'
+        f'- **Author of the Reported Message (NAME):** {reported_user_name}\n'
+        f'- **Channel Name:** {channel_name}\n'
+        f'- **Channel ID:** {channel_id}\n'
+    )
+
+    try:
+        with open(file_path, "w") as file:
+            file.write(feedback_text)
+    except IOError as e:
+        await interaction.response.send_message(f"An error occurred while saving feedback: {e}", ephemeral=True)
+        return
+
+    response_message = (
+        '# Feedback Submitted\n\n'
+        f'Thank you! Feedback **#{feedback_number}** has been recorded.\n'
+        f'**Reported Message:** `{reported_message}`\n'
+        f'**Channel:** {channel_name} (ID: {channel_id})\n'
+        f'**Submitted at:** {today_date}\n'
+    )
+
+    await interaction.response.send_message(response_message, ephemeral=True)
+
+@client.tree.context_menu(name="Resend")
+async def resend(interaction: discord.Interaction, message: discord.Message):
+    if not can_user_make_request(interaction.user.id):
+        await interaction.response.send_message("You have exceeded the maximum number of requests per hour (100). Please try again later. If this issue still exists after an hour try to contact us.", ephemeral=True)
+        return
+    escaped_message_content = discord.utils.escape_markdown(message.content)
+    await interaction.response.send_message(
+        f"`{escaped_message_content}` | **Resent by {interaction.user}** \n"
+        "-# This message is temporary and will be deleted in 10 seconds..."
+    )
+    await asyncio.sleep(10)
+    await interaction.delete_original_response()
+
 
 class FeedbackModal(Modal):
     def __init__(self):
@@ -214,10 +286,10 @@ class HelpSelect(Select):
 
     async def callback(self, interaction: discord.Interaction):
         selected_help = self.values[0]
-        di_bot_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/wiki")
-        diec_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/diec")
-        destor_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/destor")
-        discordbotmanager_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/DiscordBotManager/wiki")
+        di_bot_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/wiki")
+        diec_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/diec")
+        destor_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/destor")
+        discordbotmanager_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/DiscordBotManager/wiki")
         if selected_help == "D&I Bot":
             await interaction.response.send_message(f"Here you can read the Wiki of our [Discord Bot](https://github.com/D-I-Projects/Discord-Bot/wiki)!", view=di_bot_button, ephemeral=True)
         elif selected_help == "diec":
@@ -276,11 +348,11 @@ class ImportantSelect(Select):
     
     async def callback(self, interaction: discord.Interaction):
         selected_important = self.values[0]
-        terms_of_service_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md")
-        privacy_policy_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
-        github_page_button = link_button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
-        discord_join_button = link_button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
-        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.4")
+        terms_of_service_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md")
+        privacy_policy_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
+        github_page_button = link_button(text="Open ðŸ“©" , link="https://github.com/D-I-Projects/Discord-Bot")
+        discord_join_button = link_button(text="Join ðŸ“©", link="https://discord.gg/5NDYmBVdSA")
+        version_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.24")
         if selected_important == "Terms of Service":
             await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", view=terms_of_service_button, ephemeral=True)
         elif selected_important == "Privacy Policy":
@@ -290,7 +362,7 @@ class ImportantSelect(Select):
         elif selected_important == "Discord":
             await interaction.response.send_message(f"**A link to our [Discord Server](https://discord.gg/5NDYmBVdSA)**!", view=discord_join_button, ephemeral=True)
         elif selected_important == "Version":
-            await interaction.response.send_message(f"**Current version : [v24.9.4](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.4)**", view=version_button ,ephemeral=True)
+            await interaction.response.send_message(f"**Current version : [v24.9.4](https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.24)**", view=version_button ,ephemeral=True)
 
 @app_commands.command(name="important", description="Important Links for the Discord Bot.")
 @app_commands.allowed_installs(guilds=True, users=True)
