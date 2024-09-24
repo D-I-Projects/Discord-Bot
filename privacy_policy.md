@@ -41,7 +41,7 @@ When using the `Report` command in the context menu, we also collect:
 - **Submitted at:** The date and time of submission.
 - **Reported Message:** Your rating of the program.
 - **Author of the Reported Message (USER-ID):** User ID of the person who wrote the message.
-- - **Author of the Reported Message (NAME):** User Name of the person who wrote the message.
+- **Author of the Reported Message (NAME):** User Name of the person who wrote the message.
 - **Channel Name:** The channel where the reported message was written.
 - **Channel ID:** Unique identifier for the channel.
 
