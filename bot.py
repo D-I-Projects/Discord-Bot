@@ -286,10 +286,10 @@ class HelpSelect(Select):
 
     async def callback(self, interaction: discord.Interaction):
         selected_help = self.values[0]
-        di_bot_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/wiki")
-        diec_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/diec")
-        destor_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/destor")
-        discordbotmanager_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/DiscordBotManager/wiki")
+        di_bot_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/wiki")
+        diec_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/diec")
+        destor_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/destor")
+        discordbotmanager_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/DiscordBotManager/wiki")
         if selected_help == "D&I Bot":
             await interaction.response.send_message(f"Here you can read the Wiki of our [Discord Bot](https://github.com/D-I-Projects/Discord-Bot/wiki)!", view=di_bot_button, ephemeral=True)
         elif selected_help == "diec":
@@ -348,11 +348,11 @@ class ImportantSelect(Select):
     
     async def callback(self, interaction: discord.Interaction):
         selected_important = self.values[0]
-        terms_of_service_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md")
-        privacy_policy_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
-        github_page_button = link_button(text="Open ðŸ“©" , link="https://github.com/D-I-Projects/Discord-Bot")
-        discord_join_button = link_button(text="Join ðŸ“©", link="https://discord.gg/5NDYmBVdSA")
-        version_button = link_button(text="Show ðŸ“©", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.24")
+        terms_of_service_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md")
+        privacy_policy_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/blob/main/privacy_policy.md")
+        github_page_button = link_button(text="Open 📩" , link="https://github.com/D-I-Projects/Discord-Bot")
+        discord_join_button = link_button(text="Join 📩", link="https://discord.gg/5NDYmBVdSA")
+        version_button = link_button(text="Show 📩", link="https://github.com/D-I-Projects/Discord-Bot/releases/tag/v24.9.24")
         if selected_important == "Terms of Service":
             await interaction.response.send_message(f"Here you can take a look at our [Terms of Service](https://github.com/D-I-Projects/Discord-Bot/blob/main/terms_of_service.md)!", view=terms_of_service_button, ephemeral=True)
         elif selected_important == "Privacy Policy":
